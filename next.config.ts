@@ -2,14 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Accept image URLs from any HTTPS host (admins paste links from
+    // Unsplash, ImgBB, Supabase Storage, Google Drive direct links, etc.).
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "plus.unsplash.com",
+        hostname: "**",
       },
     ],
     formats: ["image/avif", "image/webp"],
