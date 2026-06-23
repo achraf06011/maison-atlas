@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { galleryImageSchema } from "@/lib/validations";
 import { requireAdmin } from "@/lib/api-helpers";
+
+function revalidatePublic() {
+  revalidatePath("/galerie");
+  revalidatePath("/");
+}
 
 // PATCH — admin: update a gallery image
 export async function PATCH(
@@ -22,6 +28,7 @@ export async function PATCH(
     where: { id },
     data: parsed.data,
   });
+  revalidatePublic();
   return NextResponse.json({ image });
 }
 
@@ -35,5 +42,6 @@ export async function DELETE(
 
   const { id } = await params;
   await prisma.galleryImage.delete({ where: { id } });
+  revalidatePublic();
   return NextResponse.json({ success: true });
 }

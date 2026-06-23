@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { galleryImageSchema } from "@/lib/validations";
 import { requireAdmin } from "@/lib/api-helpers";
@@ -28,5 +29,7 @@ export async function POST(req: NextRequest) {
   const image = await prisma.galleryImage.create({
     data: { ...parsed.data, title: parsed.data.title || null },
   });
+  revalidatePath("/galerie");
+  revalidatePath("/");
   return NextResponse.json({ image }, { status: 201 });
 }
