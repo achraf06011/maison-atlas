@@ -93,6 +93,7 @@ model GalleryImage {
   image     String
   title     String?
   category  GalleryCategory
+  featured  Boolean         @default(false)
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
 

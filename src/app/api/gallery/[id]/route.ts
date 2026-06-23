@@ -24,6 +24,14 @@ export async function PATCH(
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
 
+  // Only one image can headline the homepage: clear the others first.
+  if (parsed.data.featured === true) {
+    await prisma.galleryImage.updateMany({
+      where: { featured: true, NOT: { id } },
+      data: { featured: false },
+    });
+  }
+
   const image = await prisma.galleryImage.update({
     where: { id },
     data: parsed.data,

@@ -37,6 +37,7 @@ export const galleryImageSchema = z.object({
   image: z.string().url("URL d'image invalide"),
   title: z.string().max(120).optional().or(z.literal("")),
   category: z.enum(["SALLE", "TERRASSE", "CUISINE", "EVENEMENTS", "PLATS"]),
+  featured: z.boolean().default(false),
 });
 
 export type GalleryImageInput = z.infer<typeof galleryImageSchema>;

@@ -26,6 +26,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (parsed.data.featured === true) {
+    await prisma.galleryImage.updateMany({
+      where: { featured: true },
+      data: { featured: false },
+    });
+  }
+
   const image = await prisma.galleryImage.create({
     data: { ...parsed.data, title: parsed.data.title || null },
   });

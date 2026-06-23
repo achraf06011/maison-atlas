@@ -18,6 +18,7 @@ export default async function AdminGalleryPage() {
     image: i.image,
     title: i.title,
     category: i.category,
+    featured: i.featured,
   }));
 
   return (

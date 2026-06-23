@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Loader2 } from "lucide-react";
+import { Plus, Trash2, Loader2, Star } from "lucide-react";
 import { galleryImageSchema, type GalleryImageInput } from "@/lib/validations";
 import { GALLERY_CATEGORY_LABELS } from "@/lib/utils";
 import { useToast } from "@/components/providers/toast-provider";
@@ -32,6 +32,7 @@ interface GalleryRow {
   image: string;
   title: string | null;
   category: GalleryImageInput["category"];
+  featured: boolean;
 }
 
 const CATEGORIES = ["SALLE", "TERRASSE", "CUISINE", "EVENEMENTS", "PLATS"] as const;
@@ -50,11 +51,11 @@ export function GalleryManager({ initial }: { initial: GalleryRow[] }) {
     formState: { errors, isSubmitting },
   } = useForm<GalleryImageInput>({
     resolver: zodResolver(galleryImageSchema),
-    defaultValues: { category: "SALLE", title: "", image: "" },
+    defaultValues: { category: "SALLE", title: "", image: "", featured: false },
   });
 
   const openCreate = () => {
-    reset({ category: "SALLE", title: "", image: "" });
+    reset({ category: "SALLE", title: "", image: "", featured: false });
     setOpen(true);
   };
 
@@ -90,6 +91,28 @@ export function GalleryManager({ initial }: { initial: GalleryRow[] }) {
     }
   };
 
+  const setFeatured = async (id: string) => {
+    try {
+      const res = await fetch(`/api/gallery/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ featured: true }),
+      });
+      if (!res.ok) throw new Error();
+      // Single featured image: mark this one, clear the rest locally.
+      setRows((prev) =>
+        prev.map((r) => ({ ...r, featured: r.id === id }))
+      );
+      toast({
+        variant: "success",
+        title: "Photo vedette mise à jour",
+        description: "Elle occupe la grande tuile de l'accueil.",
+      });
+    } catch {
+      toast({ variant: "error", title: "Échec de la mise à jour" });
+    }
+  };
+
   return (
     <div>
       <div className="mb-6 flex justify-end">
@@ -112,7 +135,9 @@ export function GalleryManager({ initial }: { initial: GalleryRow[] }) {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="group relative aspect-square overflow-hidden border border-ivory/10"
+                className={`group relative aspect-square overflow-hidden border ${
+                  row.featured ? "border-gold" : "border-ivory/10"
+                }`}
               >
                 <Image
                   src={row.image}
@@ -121,8 +146,25 @@ export function GalleryManager({ initial }: { initial: GalleryRow[] }) {
                   className="object-cover"
                   sizes="(max-width: 768px) 50vw, 25vw"
                 />
+                {row.featured && (
+                  <div className="absolute left-2 top-2 z-10 flex items-center gap-1 bg-gold px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-noir">
+                    <Star className="h-3 w-3 fill-noir" /> Vedette
+                  </div>
+                )}
                 <div className="absolute inset-0 flex flex-col justify-between bg-noir/60 p-3 opacity-0 transition-opacity group-hover:opacity-100">
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setFeatured(row.id)}
+                      className={`flex h-8 w-8 items-center justify-center transition-colors ${
+                        row.featured
+                          ? "bg-gold text-noir"
+                          : "bg-noir/70 text-ivory hover:bg-gold hover:text-noir"
+                      }`}
+                      aria-label="Définir comme photo vedette"
+                      title="Photo vedette (grande tuile de l'accueil)"
+                    >
+                      <Star className={`h-4 w-4 ${row.featured ? "fill-noir" : ""}`} />
+                    </button>
                     <button
                       onClick={() => remove(row.id)}
                       className="flex h-8 w-8 items-center justify-center bg-red-500/80 text-ivory transition-colors hover:bg-red-500"
@@ -185,6 +227,15 @@ export function GalleryManager({ initial }: { initial: GalleryRow[] }) {
                 </SelectContent>
               </Select>
             </div>
+            <label className="flex items-center gap-3 text-sm text-ivory">
+              <input
+                type="checkbox"
+                checked={watch("featured") ?? false}
+                onChange={(e) => setValue("featured", e.target.checked)}
+                className="h-4 w-4 accent-gold"
+              />
+              Photo vedette (grande tuile de la page d&apos;accueil)
+            </label>
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
                 Annuler

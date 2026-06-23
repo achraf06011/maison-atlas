@@ -8,7 +8,12 @@ import type { GalleryImage } from "@prisma/client";
 import { Reveal } from "@/components/shared/reveal";
 
 export function GalleryPreview({ images }: { images: GalleryImage[] }) {
-  const items = images.slice(0, 5);
+  // The image flagged "featured" headlines the large tile; otherwise the first.
+  const featured = images.find((i) => i.featured);
+  const ordered = featured
+    ? [featured, ...images.filter((i) => i.id !== featured.id)]
+    : images;
+  const items = ordered.slice(0, 5);
 
   return (
     <section className="section-padding bg-noir-soft">
