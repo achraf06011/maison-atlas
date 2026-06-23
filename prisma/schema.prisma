@@ -1,0 +1,113 @@
+// ============================================================
+//  Maison Atlas Premium — Prisma schema
+//  Database: Supabase PostgreSQL
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  REFUSED
+}
+
+enum MenuCategory {
+  ENTREE
+  PLAT
+  DESSERT
+  BOISSON
+  DEGUSTATION
+}
+
+enum GalleryCategory {
+  SALLE
+  TERRASSE
+  CUISINE
+  EVENEMENTS
+  PLATS
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Reservation {
+  id        String            @id @default(cuid())
+  name      String
+  phone     String
+  email     String
+  guests    Int
+  date      DateTime
+  time      String
+  message   String?
+  status    ReservationStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([date])
+  @@index([status])
+  @@map("reservations")
+}
+
+model MenuItem {
+  id          String       @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  image       String
+  category    MenuCategory
+  allergens   String[]     @default([])
+  featured    Boolean      @default(false)
+  available   Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([category])
+  @@map("menu_items")
+}
+
+model GalleryImage {
+  id        String          @id @default(cuid())
+  image     String
+  title     String?
+  category  GalleryCategory
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([category])
+  @@map("gallery_images")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  client    String
+  rating    Int      @default(5)
+  comment   String
+  approved  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews")
+}

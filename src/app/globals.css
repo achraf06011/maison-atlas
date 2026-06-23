@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 44 33% 94%;
+    --card: 0 0% 7%;
+    --card-foreground: 44 33% 94%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 44 33% 94%;
+    --primary: 45 68% 47%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 44 33% 94%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 44 10% 65%;
+    --accent: 45 68% 47%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 44 33% 94%;
+    --border: 44 10% 20%;
+    --input: 44 10% 20%;
+    --ring: 45 68% 47%;
+    --radius: 0rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply bg-noir text-ivory font-sans antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    @apply bg-gold text-noir;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply px-6 py-24 md:px-12 md:py-32;
+  }
+
+  .eyebrow {
+    @apply text-xs uppercase tracking-[0.4em] text-gold;
+  }
+
+  .heading-xl {
+    @apply font-serif text-4xl leading-[1.05] tracking-tight sm:text-6xl md:text-7xl;
+  }
+
+  .heading-lg {
+    @apply font-serif text-3xl leading-tight tracking-tight sm:text-5xl;
+  }
+
+  .text-gold-gradient {
+    @apply bg-gradient-to-r from-gold-dark via-gold-light to-gold bg-clip-text text-transparent;
+  }
+
+  .gold-divider {
+    @apply mx-auto h-px w-24 bg-gradient-to-r from-transparent via-gold to-transparent;
+  }
+}
+
+@layer utilities {
+  .shimmer-bg {
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      rgba(201, 162, 39, 0.18) 50%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom scrollbar — keeps the premium dark aesthetic */
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c9a227;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
