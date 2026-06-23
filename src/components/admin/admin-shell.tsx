@@ -77,7 +77,7 @@ export function AdminShell({
           <ExternalLink className="h-4 w-4" /> Voir le site
         </Link>
         <button
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={() => signOut({ callbackUrl: "/" })}
           className="flex w-full items-center gap-3 px-4 py-3 text-sm text-ivory-muted transition-colors hover:text-red-400"
         >
           <LogOut className="h-4 w-4" /> Déconnexion
